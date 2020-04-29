@@ -105,7 +105,6 @@ double **matrix_gesse(const double  &x1,const double  &x2){
 
 }
 
-
 double *swanna_x1(const double &x1,const double &x2){
     double h= 0.001;
     double *a_x1 = new double[2];
@@ -146,25 +145,27 @@ double *swanna_x2(const double &x1,const double &x2){
     return a_x2;
 }
 
-void method_uniform(){
+double *method_uniform(double a, double b){
     double N=1000;
-    double a = -10, b = 10; 
+    double aa = a, bb = b; 
     double dn = abs(b - a)/N;
     double temp=0;
     double min=0;
-    double x=0,y=0;
-    min = function(a,b);
+    double *x = new double [2];
+    x[0] = a;
+    x[1] = b;
+    min = function(a, b);
     for(double i = a; i < b; i += dn){
       for(double j = b; j > a; j -= dn){
         temp = function(i,j);
         if(temp < min){
           min = temp;
-          x = i;
-          y = j;
+          x[0] = i;
+          x[1] = j;
         }
       }
     }
-    std::cout << "x1 = " << x << "  " << "x2 = " <<  y << std::endl;
+    return x;
   
 }
 
@@ -178,10 +179,12 @@ int main(){
   const int size = 2;
   const double eps = 0.00001;
 
+
   double **inv_gesse = new double *[size];
   double **gesse =  new double *[size];
   double *grad =  new double [size];
   double *P  = new double [size];
+  double *uniform = new double [size];
 
   for(int i = 0; i < size; i++){
         gesse[i] = new double[size];
@@ -201,6 +204,11 @@ double temp[size];
 double *swanna_1 = new double[size];
 double *swanna_2 = new double[size];
 int n = 0;
+
+
+
+
+
 out.open("data.dat");
 while(det_grad >= eps){
   
@@ -210,6 +218,9 @@ while(det_grad >= eps){
           P[i] +=  grad[j] * inv_gesse[i][j]; //направление спуска
         }
       }
+
+  
+
   for(int i = 0; i < size; i++){
     temp[i] = x[i] - 1*P[i];
     x[i] = temp[i];
@@ -222,6 +233,7 @@ while(det_grad >= eps){
   det_grad = sqrt(grad[0] * grad[0] + grad[1] * grad[1]);
   swanna_1 = swanna_x1(x[0],x[1]);
   swanna_2 = swanna_x2(x[0],x[1]);
+  uniform = method_uniform(x[0],x[1]);
   out << x[0] << " " << x[1] << std::endl;
   n++;
 }
@@ -232,10 +244,8 @@ while(det_grad >= eps){
   std::cout << "--Swanna--" << std::endl;
   std::cout <<"[" <<   swanna_1[0] << " : " << swanna_1[1] << "]" << std::endl;
   std::cout <<"[" <<   swanna_2[0] << " : " << swanna_2[1] << "]" << std::endl;
-   std::cout << "===Method uniform===" << std::endl;
-  method_uniform();
-
-
+  std::cout << "===Method uniform===" << std::endl;
+  std::cout << uniform[0] << " " << uniform[1] << std::endl;
 
 
 
